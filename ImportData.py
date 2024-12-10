@@ -32,9 +32,6 @@ def testOnNewDataset(model, path):
     # Ridurre dimensionalità con PCA (se applicabile)
     X_new = X_new.astype('float32')
 
-    # Predizioni sul nuovo dataset
-    #predictions = model.predict(X_new)
-
     # Valutazione se c'è una colonna target
     y_new = new_data['label']
     X_train_new, X_test_new, y_train_new, y_test_new = \
@@ -44,17 +41,7 @@ def testOnNewDataset(model, path):
     print(f'Accuracy: {accuracy_score(y_test_new, y_pred_new)}')
     print(classification_report(y_test_new, y_pred_new))
 
-    dump(model, 'random_forest_model_updated'+str(18+i)+'.joblib')
-
-    # Se esiste una colonna target, calcola l'accuracy e stampa il report
-'''    if 'label' in new_data.columns:
-        y_new = new_data['label']
-        y_new = y_new[X_new.index]
-        print(f"Accuracy sul nuovo dataset: {accuracy_score(y_new, predictions)}")
-        print(classification_report(y_new, predictions))
-    else:
-        print("Predizioni sul nuovo dataset:")
-        print(predictions)'''
+    dump(model, 'random_forest_model_updated'+str(0+i)+'.joblib')
 
 
 
@@ -62,7 +49,7 @@ file_path = 'random_forest_model.joblib'
 if os.path.exists(file_path):
     model = load('random_forest_model.joblib')
     for i in range(5):
-        testOnNewDataset(model, '../Dataset2/Network_dataset_'+str(19+i)+'.csv')
+        testOnNewDataset(model, '../Dataset2/Network_dataset_'+str(2+i)+'.csv')
 else:
     # Carica il dataset
     df = pd.read_csv('../Dataset2/Network_dataset_1.csv', low_memory=False)
@@ -74,8 +61,9 @@ else:
 
     # Encoding per variabili categoriche
     X = df.drop(target_column, axis=1, errors='ignore')
+    X = X.drop('type', axis=1, errors='ignore')
     print(X.columns)
-    y = df[target_column]
+    y = df['type']
 
     # Applica Label Encoding su eventuali colonne categoriche rimanenti
     label_encoders = {}
@@ -91,14 +79,8 @@ else:
     column_names = X.columns
     pd.Series(column_names).to_csv('feature_columns.csv', index=False, header=False)
 
-    # Riduci il dataset (opzionale)
-    #X = X.sample(frac=0.1, random_state=42)
-    #y = y[X.index]
-
     # Applica PCA per ridurre le dimensioni
     X = X.astype('float32')
-    #pca = PCA(n_components=100)
-    #X_reduced = pca.fit_transform(X)
 
     # Dividi il dataset
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
