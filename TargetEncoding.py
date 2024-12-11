@@ -15,10 +15,12 @@ df2 = pd.concat(data2)
 X = df
 y = df2
 
+y = y.values.ravel()
+
 enc_auto = TargetEncoder(smooth="auto")
 X_trans = enc_auto.fit_transform(X, y)
 
-pd.Series(X_trans).to_csv('TransData.csv', index=False, header=False)
+pd.DataFrame(X_trans).to_csv('TransData.csv', index=False, header=False)
 
 
 
