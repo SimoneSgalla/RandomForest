@@ -4,15 +4,16 @@ from sklearn.ensemble import RandomForestClassifier
 from joblib import dump
 from sklearn.preprocessing import TargetEncoder
 
-
 data = []
+data2 = []
 for i in range(22):
-    data.append(pd.read_csv('../Dataset2/Network_dataset_'+str(1+i)+'.csv', low_memory=False))
+    data.append(pd.read_csv('../Dataset2/Network_dataset_'+str(1+i)+'.csv', low_memory=False, usecols=['src_ip']))
+    data.append(pd.read_csv('../Dataset2/Network_dataset_' + str(1 + i) + '.csv', low_memory=False, usecols=['label']))
 df = pd.concat(data)
+df2 = pd.concat(data2)
 
-X = df.drop('label', axis=1, errors='ignore')
-X = X.drop('type', axis=1, errors='ignore')
-y = df['type']
+X = df
+y = df2
 
     # Applica Label Encoding su eventuali colonne categoriche rimanenti
 
@@ -20,9 +21,7 @@ y = df['type']
 enc_auto = TargetEncoder(smooth="auto")
 X_trans = enc_auto.fit_transform(X, y)
 
-model = RandomForestClassifier(n_estimators=100, random_state=42)
-model.fit(X_trans, y)
-
 dump(X_trans, 'random_forest_model.joblib')
+
 
 
