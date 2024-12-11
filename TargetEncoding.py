@@ -15,26 +15,27 @@ from sklearn.preprocessing import LabelEncoder
 from joblib import load
 from sklearn.feature_selection import VarianceThreshold
 from joblib import dump
+from sklearn.preprocessing import TargetEncoder
 
 
 data = []
 for i in range(22):
-    data.append(pd.read_csv('../Dataset2/Network_dataset_1.csv', low_memory=False))
+    data.append(pd.read_csv('../Dataset2/Network_dataset_'+str(1+i)+'.csv', low_memory=False))
 df = pd.concat(data)
+
+X = df.drop('label', axis=1, errors='ignore')
+X = X.drop('type', axis=1, errors='ignore')
+y = df['type']
 
     # Applica Label Encoding su eventuali colonne categoriche rimanenti
 
-label_encoders = {}
-for col in df.select_dtypes(include=['object']).columns:
-    le = LabelEncoder()
-    df[col] = le.fit_transform(df[col])
-    label_encoders[col] = le
-
     # Salva i trasformatori
-dump(label_encoders, 'label_encoders.joblib')
+enc_auto = TargetEncoder(smooth="auto")
+X_trans = enc_auto.fit_transform(X, y)
 
-    # Salva i nomi delle colonne dopo il preprocessing completo
-column_names = df.columns
-pd.Series(column_names).to_csv('feature_columns.csv', index=False, header=False)
+model = RandomForestClassifier(n_estimators=100, random_state=42)
+model.fit(X_train, y_train)
+
+dump(X_trans, 'random_forest_model.joblib')
 
 
